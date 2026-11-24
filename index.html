@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marea Vial · Simulador de cruce</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="encabezado">
+    <div>
+      <h1>Marea Vial</h1>
+      <p class="subtitulo">Simulador 2D de tráfico · Reto 3 · <span id="nombre-cruce">Santa Marta</span></p>
+    </div>
+    <span id="fuente-datos" class="etiqueta">Cargando datos…</span>
+  </header>
+
+  <main class="contenido">
+    <section class="tarjeta lienzo-tarjeta">
+      <canvas id="lienzo" aria-label="Vista de la intersección simulada"></canvas>
+      <ul class="leyenda">
+        <li><span class="muestra moto"></span>Moto</li>
+        <li><span class="muestra carro"></span>Carro</li>
+        <li><span class="muestra buseta"></span>Buseta</li>
+        <li><span class="muestra cola"></span>En cola</li>
+      </ul>
+    </section>
+
+    <aside class="panel">
+      <section class="tarjeta">
+        <h2>Simulación</h2>
+        <div class="fila botones">
+          <button id="btn-pausa" class="primario">Pausar</button>
+          <button id="btn-reiniciar">Reiniciar</button>
+        </div>
+        <div class="campo">
+          <span class="rotulo">Velocidad</span>
+          <div class="segmentado" id="velocidad">
+            <button data-vel="1" class="activo">x1</button>
+            <button data-vel="5">x5</button>
+            <button data-vel="10">x10</button>
+          </div>
+        </div>
+        <label class="campo">
+          <span class="rotulo">Semilla (fija)</span>
+          <input type="number" id="semilla" step="1" min="0">
+        </label>
+        <p class="ayuda">Al cambiar la semilla se reinicia la simulación. Misma semilla = mismas llegadas.</p>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Modo de operación</h2>
+        <div class="segmentado vertical" id="modos">
+          <button data-modo="actual">Actual (prelación)</button>
+          <button data-modo="semaforo">Semáforo virtual</button>
+          <button data-modo="alternativa">Alternativa (agente)</button>
+        </div>
+        <p class="ayuda" id="ayuda-modo"></p>
+
+        <div class="grupo-param" data-para="actual">
+          <label class="campo"><span class="rotulo">Brecha crítica (s)</span>
+            <input type="number" min="1" max="15" step="0.5" data-param="actual.brechaCritica"></label>
+        </div>
+        <div class="grupo-param" data-para="semaforo">
+          <label class="campo"><span class="rotulo">Verde E–O (s)</span>
+            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeEO"></label>
+          <label class="campo"><span class="rotulo">Verde N–S (s)</span>
+            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeNS"></label>
+          <label class="campo"><span class="rotulo">Amarillo (s)</span>
+            <input type="number" min="2" max="6" step="0.5" data-param="semaforo.amarillo"></label>
+          <label class="campo"><span class="rotulo">Todo rojo (s)</span>
+            <input type="number" min="0" max="6" step="0.5" data-param="semaforo.todoRojo"></label>
+        </div>
+        <div class="grupo-param" data-para="alternativa">
+          <label class="campo"><span class="rotulo">Turno por acceso (s)</span>
+            <input type="number" min="3" max="90" step="1" data-param="alternativa.turno"></label>
+          <label class="campo"><span class="rotulo">Despeje entre turnos (s)</span>
+            <input type="number" min="0" max="10" step="0.5" data-param="alternativa.despeje"></label>
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Métricas en tiempo real</h2>
+        <div class="kpis">
+          <div class="kpi"><span class="kpi-valor" id="m-capacidad">0</span><span class="kpi-rotulo">veh evacuados<br>último minuto</span></div>
+          <div class="kpi"><span class="kpi-valor" id="m-espera">0.0</span><span class="kpi-rotulo">s de espera<br>promedio</span></div>
+          <div class="kpi"><span class="kpi-valor" id="m-enred">0</span><span class="kpi-rotulo">vehículos<br>en la red</span></div>
+        </div>
+        <table class="tabla-colas">
+          <thead><tr><th>Acceso</th><th>Cola actual</th><th>Cola máx.</th><th>Espera prom.</th></tr></thead>
+          <tbody id="m-colas"></tbody>
+        </table>
+      </section>
+    </aside>
+
+    <section class="tarjeta comparador">
+      <div class="comparador-cabecera">
+        <div>
+          <h2>Comparador de modos</h2>
+          <p class="ayuda">Corre los tres modos sin dibujar, con la misma semilla y los parámetros actuales.</p>
+        </div>
+        <div class="fila">
+          <label class="campo en-linea"><span class="rotulo">Minutos simulados</span>
+            <input type="number" id="minutos-comp" min="1" max="120" step="1"></label>
+          <button id="btn-comparar" class="primario">Comparar</button>
+        </div>
+      </div>
+      <div class="tabla-scroll">
+        <table class="tabla-comparador" id="tabla-comparador">
+          <thead><tr><th>Indicador</th><th>Actual</th><th>Semáforo virtual</th><th>Alternativa</th></tr></thead>
+          <tbody><tr><td colspan="4" class="vacio">Pulsa «Comparar» para llenar la tabla.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Sin módulos ES ni fetch obligatorio: así funciona con doble clic (file://). -->
+  <script src="datos_respaldo.js"></script>
+  <script src="llegadas.js"></script>
+  <script src="control.js"></script>
+  <script src="vehiculos.js"></script>
+  <script src="metricas.js"></script>
+  <script src="motor.js"></script>
+  <script src="dibujo.js"></script>
+  <script src="interfaz.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "nombre": "Cruce de ejemplo en Santa Marta: avenida principal (E–O) × carrera (N–S)",
+  "nota": "Medidas ilustrativas. Reemplazar con las medidas tomadas en campo por el equipo.",
+  "unidades": "metros",
+  "longitudAcceso": 80,
+  "anchoCarril": 3.5,
+  "berma": 1.2,
+  "anchoPasoPeatonal": 3.0,
+  "anchoAnden": 2.5,
+  "desplazamientoFiltro": 1.35,
+  "accesos": [
+    { "id": "N", "nombre": "Norte", "via": "Carrera (sentido N→S)", "eje": "NS", "direccion": [0, 1] },
+    { "id": "S", "nombre": "Sur", "via": "Carrera (sentido S→N)", "eje": "NS", "direccion": [0, -1] },
+    { "id": "E", "nombre": "Este", "via": "Avenida (sentido E→O)", "eje": "EO", "direccion": [-1, 0] },
+    { "id": "O", "nombre": "Oeste", "via": "Avenida (sentido O→E)", "eje": "EO", "direccion": [1, 0] }
+  ]
+}

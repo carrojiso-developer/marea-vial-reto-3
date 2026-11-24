@@ -1,0 +1,11 @@
+{
+  "descripcion": "Tasas de llegada en vehículos por hora, por acceso y tipo. Valores de ejemplo para hora pico; reemplazar con el aforo real del equipo.",
+  "periodo": "Hora pico de la tarde (ejemplo)",
+  "unidades": "veh/h",
+  "tasas": {
+    "N": { "moto": 260, "carro": 140, "buseta": 12 },
+    "S": { "moto": 240, "carro": 130, "buseta": 10 },
+    "E": { "moto": 520, "carro": 300, "buseta": 40 },
+    "O": { "moto": 500, "carro": 280, "buseta": 36 }
+  }
+}
