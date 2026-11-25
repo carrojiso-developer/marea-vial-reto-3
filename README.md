@@ -89,9 +89,9 @@ Estados de un vehículo: `pendiente → aproximando → en_cola → cruzando →
 
 | Integrante | Rol | Responsabilidades | Contacto / GitHub |
 |---|---|---|---|
-| _Nombre 1_ | Líder / integración | Motor, coordinación, revisión de PR | `usuario1` |
-| _Nombre 2_ | Datos de campo | Aforo, geometría, `*.json` | `usuario2` |
-| _Nombre 3_ | Modelo y control | `vehiculos.js`, `control.js`, calibración | `usuario3` |
-| _Nombre 4_ | Interfaz y métricas | `dibujo.js`, `index.html`, `metricas.js`, informe | `usuario4` |
+| Carlos Jose Rosales Jimenez | Diseñador de instrucciones para la IA (Líder / integración) | Arquitectura, prompts IA, `motor.js`, `llegadas.js`, coordinación y revisión de PR | `carrojiso-developer` |
+| Yoneiker Villalobos | Analista de campo y datos | Trabajo de campo, aforo, croquis, `geometria.json`, `conteos.json` y `datos_respaldo.js` | `Yoneiker-Spm` |
+| Juan Dávila | Ingeniero de lógica y métricas | Reglas de tráfico, `vehiculos.js`, `control.js`, `metricas.js`, `parametros.json` y calibración | `JuanDavila25` |
+| Alejandro Villarreal | Diseñador de interfaz y documentador | `index.html`, `styles.css`, `dibujo.js`, `interfaz.js` y los 3 PDF en `documentos/` | `Ale-vi` |
 
 **Curso:** Introducción a la carrera · **Reto:** 3 · **Ciudad:** Santa Marta
