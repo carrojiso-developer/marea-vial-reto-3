@@ -5,24 +5,119 @@
     "minutosComparacion": 15
   },
   "vehiculos": {
-    "moto":   { "largo": 2.0, "ancho": 0.8, "velDeseada": 11.1, "acelMax": 3.0, "decelComoda": 3.5, "decelMax": 7.0, "distMinima": 1.0, "tiempoSeguimiento": 0.8 },
-    "carro":  { "largo": 4.5, "ancho": 1.8, "velDeseada": 11.1, "acelMax": 2.0, "decelComoda": 3.0, "decelMax": 7.5, "distMinima": 2.0, "tiempoSeguimiento": 1.4 },
-    "buseta": { "largo": 8.5, "ancho": 2.4, "velDeseada": 9.7,  "acelMax": 1.2, "decelComoda": 2.5, "decelMax": 6.0, "distMinima": 2.5, "tiempoSeguimiento": 1.6 }
+    "moto": {
+      "largo": 2.0,
+      "ancho": 0.8,
+      "velDeseada": 11.1,
+      "acelMax": 3.0,
+      "decelComoda": 3.5,
+      "decelMax": 7.0,
+      "distMinima": 1.0,
+      "tiempoSeguimiento": 0.8,
+      "_unidades": {
+        "largo": "m",
+        "ancho": "m",
+        "velDeseada": "m/s",
+        "acelMax": "m/s²",
+        "decelComoda": "m/s²",
+        "decelMax": "m/s²",
+        "distMinima": "m",
+        "tiempoSeguimiento": "s"
+      }
+    },
+    "carro": {
+      "largo": 4.5,
+      "ancho": 1.8,
+      "velDeseada": 11.1,
+      "acelMax": 2.0,
+      "decelComoda": 3.0,
+      "decelMax": 7.5,
+      "distMinima": 2.0,
+      "tiempoSeguimiento": 1.4,
+      "_unidades": {
+        "largo": "m",
+        "ancho": "m",
+        "velDeseada": "m/s",
+        "acelMax": "m/s²",
+        "decelComoda": "m/s²",
+        "decelMax": "m/s²",
+        "distMinima": "m",
+        "tiempoSeguimiento": "s"
+      }
+    },
+    "buseta": {
+      "largo": 8.5,
+      "ancho": 2.4,
+      "velDeseada": 9.7,
+      "acelMax": 1.2,
+      "decelComoda": 2.5,
+      "decelMax": 6.0,
+      "distMinima": 2.5,
+      "tiempoSeguimiento": 1.6,
+      "_unidades": {
+        "largo": "m",
+        "ancho": "m",
+        "velDeseada": "m/s",
+        "acelMax": "m/s²",
+        "decelComoda": "m/s²",
+        "decelMax": "m/s²",
+        "distMinima": "m",
+        "tiempoSeguimiento": "s"
+      }
+    }
   },
   "motos": {
     "filtrado": true,
     "brechaFiltrado": 1.5,
-    "velMaxFiltrado": 5.0
+    "velMaxFiltrado": 5.0,
+    "_unidades": {
+      "filtrado": "booleano",
+      "brechaFiltrado": "m",
+      "velMaxFiltrado": "m/s"
+    }
   },
   "control": {
     "modoInicial": "actual",
     "distanciaDecision": 25,
-    "actual": { "ejePrincipal": "EO", "brechaCritica": 4.0 },
-    "semaforo": { "verdeEO": 30, "verdeNS": 20, "amarillo": 3, "todoRojo": 2 },
-    "alternativa": { "turno": 12, "despeje": 3, "orden": ["N", "E", "S", "O"] }
+    "actual": {
+      "ejePrincipal": "EO",
+      "brechaCritica": 4.0,
+      "_unidades": {
+        "brechaCritica": "s"
+      }
+    },
+    "semaforo": {
+      "verdeEO": 30,
+      "verdeNS": 20,
+      "amarillo": 3,
+      "todoRojo": 2,
+      "_unidades": {
+        "verdeEO": "s",
+        "verdeNS": "s",
+        "amarillo": "s",
+        "todoRojo": "s"
+      }
+    },
+    "alternativa": {
+      "turno": 12,
+      "despeje": 3,
+      "orden": ["N", "E", "S", "O"],
+      "_unidades": {
+        "turno": "s",
+        "despeje": "s"
+      }
+    },
+    "_unidades": {
+      "distanciaDecision": "m"
+    }
   },
   "metricas": {
     "ventanaCapacidad": 60,
-    "umbralVelocidadCola": 1.0
+    "umbralVelocidadCola": 1.0,
+    "_unidades": {
+      "ventanaCapacidad": "s",
+      "umbralVelocidadCola": "m/s"
+    }
   }
 }
+   
