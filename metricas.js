@@ -1,6 +1,8 @@
 /* =========================================================================
  * metricas.js — Paso 4 del motor: indicadores.
  *
+ *  (Solo la glorieta y sus accesos: el tráfico de paso del Puente Ruta 90
+ *  —nivel 2— no se cuenta.)
  *  - Capacidad de evacuación: vehículos que pasaron a estado 'salio' en el
  *    último minuto simulado (ventana deslizante de parametros.metricas).
  *  - Cola máxima por acceso: mayor cantidad simultánea de vehículos en
@@ -16,7 +18,7 @@
 
 const Metricas = {
   crear(geo, param) {
-    const porAcceso = (valor) => Object.fromEntries(Object.keys(geo.accesos).map((id) => [id, valor]));
+    const porAcceso = (valor) => Object.fromEntries(geo.entradas.map((id) => [id, valor]));
     return {
       ventana: param.metricas.ventanaCapacidad,
       tiemposSalida: [],
@@ -53,7 +55,7 @@ const Metricas = {
     m.capacidad = m.tiemposSalida.length;
 
     for (const id of Object.keys(m.colaActual)) m.colaActual[id] = 0;
-    for (const veh of estado.vehiculos) if (veh.estado === 'en_cola') m.colaActual[veh.acceso]++;
+    for (const veh of estado.vehiculos) if (!veh.puente && !veh.paso && veh.estado === 'en_cola') m.colaActual[veh.acceso]++;
     for (const id of Object.keys(estado.pendientes)) {
       for (const veh of estado.pendientes[id]) if (veh.estado === 'en_cola') m.colaActual[id]++;
     }
@@ -70,7 +72,7 @@ const Metricas = {
     for (const id of Object.keys(m.cruzadosPorAcceso)) {
       esperaAcceso[id] = m.cruzadosPorAcceso[id] ? m.esperaPorAcceso[id] / m.cruzadosPorAcceso[id] : 0;
     }
-    let enRedOPendientes = estado.vehiculos.length;
+    let enRedOPendientes = estado.vehiculos.filter((v) => !v.puente && !v.paso).length;
     for (const id of Object.keys(estado.pendientes)) enRedOPendientes += estado.pendientes[id].length;
     return {
       minutos,

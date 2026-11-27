@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Marea Vial · Simulador de cruce</title>
+  <title>Marea Vial · Glorieta de La Lucha</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,12 +17,13 @@
 
   <main class="contenido">
     <section class="tarjeta lienzo-tarjeta">
-      <canvas id="lienzo" aria-label="Vista de la intersección simulada"></canvas>
+      <canvas id="lienzo" aria-label="Vista de la Glorieta de La Lucha simulada"></canvas>
       <ul class="leyenda">
         <li><span class="muestra moto"></span>Moto</li>
         <li><span class="muestra carro"></span>Carro</li>
         <li><span class="muestra buseta"></span>Buseta</li>
         <li><span class="muestra cola"></span>En cola</li>
+        <li><span class="muestra puente"></span>Puente Ruta 90 · nivel 2 (no interactúa)</li>
       </ul>
     </section>
 
@@ -41,11 +42,18 @@
             <button data-vel="10">x10</button>
           </div>
         </div>
+        <div class="campo">
+          <span class="rotulo">Perfil de demanda (conteos.json)</span>
+          <div class="segmentado" id="perfiles">
+            <button data-perfil="pico">Hora pico</button>
+            <button data-perfil="valle">Hora valle</button>
+          </div>
+        </div>
         <label class="campo">
           <span class="rotulo">Semilla (fija)</span>
           <input type="number" id="semilla" step="1" min="0">
         </label>
-        <p class="ayuda">Al cambiar la semilla se reinicia la simulación. Misma semilla = mismas llegadas.</p>
+        <p class="ayuda">Al cambiar el perfil o la semilla se reinicia la simulación. Misma semilla = mismas llegadas.</p>
       </section>
 
       <section class="tarjeta">
@@ -53,7 +61,7 @@
         <div class="segmentado vertical" id="modos">
           <button data-modo="actual">Actual (prelación)</button>
           <button data-modo="semaforo">Semáforo virtual</button>
-          <button data-modo="alternativa">Alternativa (agente)</button>
+          <button data-modo="alternativa">Alternativa (agentes)</button>
         </div>
         <p class="ayuda" id="ayuda-modo"></p>
 
@@ -62,17 +70,21 @@
             <input type="number" min="1" max="15" step="0.5" data-param="actual.brechaCritica"></label>
         </div>
         <div class="grupo-param" data-para="semaforo">
-          <label class="campo"><span class="rotulo">Verde E–O (s)</span>
-            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeEO"></label>
-          <label class="campo"><span class="rotulo">Verde N–S (s)</span>
-            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeNS"></label>
+          <label class="campo"><span class="rotulo">Verde Carrera 15 (s)</span>
+            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeNO"></label>
+          <label class="campo"><span class="rotulo">Verde Corredor inferior (s)</span>
+            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeSE"></label>
+          <label class="campo"><span class="rotulo">Verde Corredor Este (s)</span>
+            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeE"></label>
+          <label class="campo"><span class="rotulo">Verde Calle 40 (s)</span>
+            <input type="number" min="5" max="120" step="1" data-param="semaforo.verdeNE"></label>
           <label class="campo"><span class="rotulo">Amarillo (s)</span>
             <input type="number" min="2" max="6" step="0.5" data-param="semaforo.amarillo"></label>
           <label class="campo"><span class="rotulo">Todo rojo (s)</span>
             <input type="number" min="0" max="6" step="0.5" data-param="semaforo.todoRojo"></label>
         </div>
         <div class="grupo-param" data-para="alternativa">
-          <label class="campo"><span class="rotulo">Turno por acceso (s)</span>
+          <label class="campo"><span class="rotulo">Bloque por acceso (s)</span>
             <input type="number" min="3" max="90" step="1" data-param="alternativa.turno"></label>
           <label class="campo"><span class="rotulo">Despeje entre turnos (s)</span>
             <input type="number" min="0" max="10" step="0.5" data-param="alternativa.despeje"></label>

@@ -75,11 +75,12 @@ body {
 }
 .tarjeta h2 { margin: 0 0 10px; font-size: 1rem; }
 
+.contenido > * { min-width: 0; } /* nada empuja el ancho de la página en pantallas angostas */
 .lienzo-tarjeta { padding: 10px; }
 #lienzo {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 2;
   border-radius: 8px;
 }
 
@@ -99,6 +100,7 @@ body {
 .muestra.carro { background: var(--carro); }
 .muestra.buseta { background: var(--buseta); width: 26px; }
 .muestra.cola { border: 2px solid var(--cola); }
+.muestra.puente { background: #80858c; border: 2px solid #e4e4e4; width: 26px; }
 
 .panel { display: flex; flex-direction: column; gap: 16px; }
 
@@ -172,6 +174,6 @@ th { color: var(--suave); font-weight: 600; font-size: 0.78rem; }
 .tabla-comparador td.vacio { text-align: center; color: var(--suave); padding: 18px; }
 
 @media (max-width: 900px) {
-  .contenido { grid-template-columns: 1fr; padding: 0 16px 20px; }
+  .contenido { grid-template-columns: minmax(0, 1fr); padding: 0 16px 20px; }
   .encabezado { padding: 14px 16px; }
 }

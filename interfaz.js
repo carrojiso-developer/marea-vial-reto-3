@@ -14,10 +14,11 @@
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
   const AYUDA_MODOS = {
-    actual: 'Sin semáforo: la avenida (E–O) tiene prelación; la carrera (N–S) solo entra cuando hay una brecha mayor a la brecha crítica.',
-    semaforo: 'Dos fases (E–O y N–S) con amarillo y todo-rojo. Nunca hay verdes en conflicto.',
-    alternativa: 'Un agente de tránsito da turnos fijos a cada acceso, en orden N → E → S → O, con despeje entre turnos.',
+    actual: 'Prelación: quien ya circula en el anillo (antihorario) tiene la vía. Carrera 15, Corredor inferior, Corredor Este y Calle 40 / Paralela solo entran cuando el próximo vehículo del anillo está a más de la brecha crítica. Quienes suben por el Corredor inferior hacia el Este siguen de largo rozando el anillo y ceden al unirse a la salida Este. Carrera 15 Sur (↙) y el Ramal inferior (↓) solo reciben vehículos. El Puente Ruta 90 (nivel superior) nunca cede ni frena.',
+    semaforo: 'Semáforo virtual en las cuatro entradas al anillo, una a la vez (Carrera 15 → Corredor inferior → Corredor Este → Calle 40 / Paralela), con amarillo y todo-rojo. Nunca hay dos verdes en conflicto; el anillo cede frente a la entrada en verde mientras no esté congestionado. El giro libre del Corredor inferior hacia el Este y el Puente Ruta 90 no tienen semáforo.',
+    alternativa: 'Agentes de tránsito dan paso alternado por bloques fijos de 25 s a cada entrada al anillo (Carrera 15 → Corredor inferior → Corredor Este → Calle 40 / Paralela) y detienen el anillo frente a la entrada que tiene el turno.',
   };
+
 
   // ---------- Carga de datos ----------
   async function cargarDatos() {
@@ -46,6 +47,7 @@
   // ---------- Estado de la interfaz ----------
   let estado = Motor.crear(datos);
   const render = Dibujo.crear($('#lienzo'));
+  let perfil = estado.perfil;
   let velocidad = 1;
   let pausado = false;
   let acumulado = 0;
@@ -63,7 +65,7 @@
   function reiniciar() {
     const semilla = parseInt($('#semilla').value, 10);
     const modo = estado.control.modo;
-    estado = Motor.crear(datosActuales(), { semilla: Number.isFinite(semilla) ? semilla : 0, modo });
+    estado = Motor.crear(datosActuales(), { semilla: Number.isFinite(semilla) ? semilla : 0, modo, perfil });
     acumulado = 0;
     actualizarTablero();
   }
@@ -75,6 +77,18 @@
   });
   $('#btn-reiniciar').addEventListener('click', reiniciar);
   $('#semilla').addEventListener('change', reiniciar);
+
+  function mostrarPerfil() {
+    $$('#perfiles button').forEach((x) => x.classList.toggle('activo', x.dataset.perfil === perfil));
+  }
+  for (const b of $$('#perfiles button')) {
+    b.addEventListener('click', () => {
+      perfil = b.dataset.perfil;
+      mostrarPerfil();
+      reiniciar();
+    });
+  }
+  mostrarPerfil();
 
   for (const b of $$('#velocidad button')) {
     b.addEventListener('click', () => {
@@ -113,9 +127,12 @@
 
   // ---------- Tablero de métricas ----------
   const filasColas = {};
-  for (const id of Object.keys(estado.geo.accesos)) {
+  // Accesos con entrada al anillo (las salidas puras no hacen cola).
+  const idsEntradas = (geo) => geo.entradas;
+  const nombreAcceso = (geo, id) => geo.accesos[id].nombre;
+  for (const id of idsEntradas(estado.geo)) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${estado.geo.accesos[id].nombre}</td><td></td><td></td><td></td>`;
+    tr.innerHTML = `<td>${nombreAcceso(estado.geo, id)}</td><td></td><td></td><td></td>`;
     $('#m-colas').appendChild(tr);
     filasColas[id] = tr.children;
   }
@@ -145,16 +162,16 @@
     setTimeout(() => {
       const base = Motor.clonar(datosActuales());
       const modos = ['actual', 'semaforo', 'alternativa'];
-      const res = modos.map((modo) => Motor.correrSinPantalla(base, modo, semilla, minutos));
-      const ids = Object.keys(estado.geo.accesos);
+      const res = modos.map((modo) => Motor.correrSinPantalla(base, modo, semilla, minutos, perfil));
+      const ids = idsEntradas(estado.geo);
 
       // [rótulo, función valor, decimales, ¿mejor es mayor?]
       const filas = [
         ['Capacidad de evacuación (veh, último minuto)', (r) => r.capacidadUltimoMinuto, 0, true],
         ['Evacuación promedio (veh/min)', (r) => r.salidasPorMinuto, 1, true],
         ['Tiempo promedio de espera (s)', (r) => r.esperaPromedio, 1, false],
-        ...ids.map((id) => [`Cola máxima · ${estado.geo.accesos[id].nombre}`, (r) => r.colaMax[id], 0, false]),
-        ...ids.map((id) => [`Espera promedio · ${estado.geo.accesos[id].nombre} (s)`, (r) => r.esperaPorAcceso[id], 1, false]),
+        ...ids.map((id) => [`Cola máxima · ${nombreAcceso(estado.geo, id)}`, (r) => r.colaMax[id], 0, false]),
+        ...ids.map((id) => [`Espera promedio · ${nombreAcceso(estado.geo, id)} (s)`, (r) => r.esperaPorAcceso[id], 1, false]),
         ['Vehículos evacuados (total)', (r) => r.totalSalidos, 0, true],
         ['Vehículos sin evacuar al final', (r) => r.sinEvacuar, 0, false],
       ];
@@ -178,7 +195,7 @@
         tbody.appendChild(tr);
       }
       const nota = document.createElement('tr');
-      nota.innerHTML = `<td colspan="4" class="vacio">${minutos} min simulados · semilla ${semilla} · resaltado = mejor valor</td>`;
+      nota.innerHTML = `<td colspan="4" class="vacio">${minutos} min simulados · ${datos.conteos.perfiles[perfil].nombre} · semilla ${semilla} · resaltado = mejor valor</td>`;
       tbody.appendChild(nota);
 
       boton.disabled = false;

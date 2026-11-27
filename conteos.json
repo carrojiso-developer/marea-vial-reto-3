@@ -1,11 +1,38 @@
 {
-  "descripcion": "Tasas de llegada en vehículos por hora, por acceso y tipo. Valores de ejemplo para hora pico; reemplazar con el aforo real del equipo.",
-  "periodo": "Hora pico de la tarde (ejemplo)",
-  "unidades": "veh/h",
-  "tasas": {
-    "N": { "moto": 260, "carro": 140, "buseta": 12 },
-    "S": { "moto": 240, "carro": 130, "buseta": 10 },
-    "E": { "moto": 520, "carro": 300, "buseta": 40 },
-    "O": { "moto": 500, "carro": 280, "buseta": 36 }
+  "descripcion": "Aforo por bloques de 5 minutos en los accesos de ENTRADA de la Glorieta de La Lucha (NO = Carrera 15 ↓, NE = Calle 40 / Paralela ↙, SE = Corredor inferior ↗, E = Corredor Este ←). Los de SE que van al Este siguen de largo por el corredor sin entrar al anillo. Carrera 15 Sur (S) y el Ramal inferior (SI) solo reciben vehículos. Datos calibrados base: ~55% motos, 35% carros, 10% busetas; valle ≈ 45% del pico. Reemplazar cualquier cifra con el conteo real del equipo.",
+  "unidades": "vehículos por intervalo",
+  "intervaloMin": 5,
+  "perfilActivo": "pico",
+  "perfiles": {
+    "pico": {
+      "nombre": "Hora pico (17:00–17:15)",
+      "intervalos": [
+        { "inicio": "17:00", "NO": { "moto": 39, "carro": 24, "buseta": 7 }, "NE": { "moto": 21, "carro": 14, "buseta": 4 }, "SE": { "moto": 21, "carro": 13, "buseta": 4 }, "E": { "moto": 13, "carro": 8, "buseta": 2 } },
+        { "inicio": "17:05", "NO": { "moto": 41, "carro": 26, "buseta": 8 }, "NE": { "moto": 23, "carro": 15, "buseta": 4 }, "SE": { "moto": 22, "carro": 14, "buseta": 4 }, "E": { "moto": 14, "carro": 9, "buseta": 3 } },
+        { "inicio": "17:10", "NO": { "moto": 40, "carro": 26, "buseta": 7 }, "NE": { "moto": 22, "carro": 15, "buseta": 4 }, "SE": { "moto": 21, "carro": 14, "buseta": 4 }, "E": { "moto": 13, "carro": 9, "buseta": 2 } }
+      ]
+    },
+    "valle": {
+      "nombre": "Hora valle (10:00–10:15)",
+      "intervalos": [
+        { "inicio": "10:00", "NO": { "moto": 17, "carro": 12, "buseta": 3 }, "NE": { "moto": 10, "carro": 6, "buseta": 2 }, "SE": { "moto": 9, "carro": 6, "buseta": 2 }, "E": { "moto": 6, "carro": 4, "buseta": 1 } },
+        { "inicio": "10:05", "NO": { "moto": 19, "carro": 12, "buseta": 3 }, "NE": { "moto": 10, "carro": 7, "buseta": 2 }, "SE": { "moto": 10, "carro": 6, "buseta": 2 }, "E": { "moto": 6, "carro": 4, "buseta": 1 } },
+        { "inicio": "10:10", "NO": { "moto": 18, "carro": 12, "buseta": 3 }, "NE": { "moto": 10, "carro": 7, "buseta": 2 }, "SE": { "moto": 10, "carro": 5, "buseta": 2 }, "E": { "moto": 6, "carro": 4, "buseta": 1 } }
+      ]
+    }
+  },
+  "destinos": {
+    "nota": "Proporción de vehículos de cada entrada que sale por cada acceso (suma 1). Salidas: NO = Carrera 15 (↑), S = Carrera 15 Sur (↙), SI = Ramal inferior (↓), E = Corredor Este (→), NE = Calle 40 / Paralela (↗). Los del Corredor inferior (SE) que van al Este (E) siguen de largo por el corredor sin entrar al anillo.",
+    "NO": { "S": 0.45, "SI": 0.15, "E": 0.28, "NE": 0.12 },
+    "NE": { "S": 0.4, "SI": 0.15, "E": 0.25, "NO": 0.2 },
+    "SE": { "E": 0.45, "NO": 0.25, "NE": 0.15, "S": 0.15 },
+    "E": { "NO": 0.35, "NE": 0.15, "S": 0.35, "SI": 0.15 }
+  },
+  "puente": {
+    "nota": "Tráfico de paso por el Puente Ruta 90 (nivel 2): calzada superior NE → SO (↙) y calzada inferior SO → NE (↗), cada una con 2 carriles. Pasa por encima del cuadrante sureste del anillo y de la isla central; no interactúa con el nivel 1 y no entra en las métricas.",
+    "unidades": "veh/h por sentido",
+    "pico": 1800,
+    "valle": 900,
+    "mezcla": { "moto": 0.35, "carro": 0.45, "buseta": 0.2 }
   }
 }
