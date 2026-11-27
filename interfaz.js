@@ -16,7 +16,7 @@
   const AYUDA_MODOS = {
     actual: 'Prelación: quien ya circula en el anillo (antihorario) tiene la vía. Carrera 15, Corredor inferior, Corredor Este y Calle 40 / Paralela solo entran cuando el próximo vehículo del anillo está a más de la brecha crítica. Quienes suben por el Corredor inferior hacia el Este siguen de largo rozando el anillo y ceden al unirse a la salida Este. Carrera 15 Sur (↙) y el Ramal inferior (↓) solo reciben vehículos. El Puente Ruta 90 (nivel superior) nunca cede ni frena.',
     semaforo: 'Semáforo virtual en las cuatro entradas al anillo, una a la vez (Carrera 15 → Corredor inferior → Corredor Este → Calle 40 / Paralela), con amarillo y todo-rojo. Nunca hay dos verdes en conflicto; el anillo cede frente a la entrada en verde mientras no esté congestionado. El giro libre del Corredor inferior hacia el Este y el Puente Ruta 90 no tienen semáforo.',
-    alternativa: 'Agentes de tránsito dan paso alternado por bloques fijos de 25 s a cada entrada al anillo (Carrera 15 → Corredor inferior → Corredor Este → Calle 40 / Paralela) y detienen el anillo frente a la entrada que tiene el turno.',
+    alternativa: 'Agentes de tránsito que dan paso por demanda, como un agente real: en cada cambio de turno miran la cola de Carrera 15, Corredor inferior, Corredor Este y Calle 40 / Paralela y le dan paso a la entrada con más vehículos esperando (las vacías no reciben turno). El turno sigue hasta que esa cola baja a 2 vehículos o se cumple el tope de seguridad de 40 s, y el agente detiene el anillo frente a la entrada que tiene el turno.',
   };
 
 

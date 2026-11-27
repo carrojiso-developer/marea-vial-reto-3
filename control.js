@@ -16,9 +16,15 @@
  *                     con verde, amarillo y todo-rojo (control.semaforo.verde<ID>).
  *                     Nunca hay dos verdes a la vez; mientras una entrada
  *                     está en verde, el anillo le cede el paso frente a ella.
- *   - 'alternativa' : agentes de tránsito dan paso por turnos fijos de 25 s
- *                     a cada acceso de control.alternativa.orden. El agente
- *                     detiene el anillo frente a la entrada que tiene el turno.
+ *   - 'alternativa' : agentes de tránsito que dan paso POR DEMANDA, como un
+ *                     agente real: en cada cambio de turno (tras el despeje)
+ *                     miran la cola de cada entrada y le dan paso a la que
+ *                     tiene más vehículos esperando (las que tienen 0 no
+ *                     reciben turno). El turno sigue abierto hasta que esa
+ *                     cola baja a control.alternativa.colaVaciado (2) o se
+ *                     cumple el tope de seguridad turnoMaximo (40 s); nunca
+ *                     dura menos de turnoMinimo. El agente detiene el anillo
+ *                     frente a la entrada que tiene el turno.
  *
  * Prioridad en un punto de conflicto (rango mayor = tiene la vía):
  *   salida (3.5) > anillo (3) > conector de entrada (1). Es decir: quien
@@ -48,7 +54,7 @@ const Control = {
   },
 
   crear(param) {
-    return { modo: param.control.modoInicial, faseIdx: 0, tFase: 0, luces: {}, cacheDescarga: { paso: -1, valores: {} } };
+    return { modo: param.control.modoInicial, faseIdx: 0, tFase: 0, agente: null, luces: {}, cacheDescarga: { paso: -1, valores: {} } };
   },
 
   cambiarModo(estado, modo) {
@@ -57,6 +63,7 @@ const Control = {
     ctrl.modo = modo;
     ctrl.faseIdx = 0;
     ctrl.tFase = 0;
+    ctrl.agente = null; // el agente vuelve a mirar las colas desde cero
     // Los vehículos que ya pasaron la línea terminan su recorrido; el resto espera la nueva regla.
   },
 
@@ -77,19 +84,11 @@ const Control = {
       }
       return lista;
     }
-    if (estado.control.modo === 'alternativa') {
-      const a = c.alternativa;
-      const lista = [];
-      for (const acceso of a.orden.filter((x) => entradas.includes(x))) {
-        lista.push({ acceso, luz: 'verde', dur: a.turno });
-        if (a.despeje > 0) lista.push({ acceso: null, luz: 'rojo', dur: a.despeje });
-      }
-      return lista;
-    }
-    return [];
+    return []; // 'actual' no tiene fases; 'alternativa' no sigue una secuencia fija (ver _avanzarAgente)
   },
 
   faseActual(estado) {
+    if (estado.control.modo === 'alternativa') return this._faseAgente(estado);
     const f = this.fases(estado);
     if (f.length === 0) return null;
     const ctrl = estado.control;
@@ -98,6 +97,7 @@ const Control = {
   },
 
   _avanzarFases(estado, dt) {
+    if (estado.control.modo === 'alternativa') return this._avanzarAgente(estado, dt);
     const f = this.fases(estado);
     const ctrl = estado.control;
     if (f.length === 0) return;
@@ -108,6 +108,86 @@ const Control = {
       ctrl.faseIdx = (ctrl.faseIdx + 1) % f.length;
     }
     if (ctrl.tFase < 0) ctrl.tFase = 0;
+  },
+
+  /* ------------- Modo alternativa: agente de tránsito por demanda de cola ------------- */
+
+  /**
+   * Vehículos esperando para entrar al anillo por un acceso: los que siguen antes de la línea de
+   * ceda sin autorización (en cola, o ya a menos de distanciaDecision de la línea) y los que
+   * esperan fuera del tramo dibujado. Los del giro libre (ramal) solo cuentan si están atascados
+   * en la misma fila (carril compartido del corredor inferior), porque también esperan ese paso.
+   */
+  colaAcceso(estado, id) {
+    const dDec = estado.param.control.distanciaDecision;
+    let n = 0;
+    for (const v of estado.vehiculos) {
+      if (v.acceso !== id || v.puente || v.tramo !== 0) continue;
+      if (v.carril === 'ramal') { if (v.estado === 'en_cola') n++; continue; }
+      if (!v.autorizado && (v.estado === 'en_cola' || v.ruta[0].largo - v.d <= dDec)) n++;
+    }
+    n += (estado.pendientes[id] || []).length;
+    return n;
+  },
+
+  /**
+   * Entrada con más vehículos esperando (null si todas están en 0). Empate: la siguiente en `orden`.
+   * `excluir`: acceso que agotó el tope; solo vuelve a recibir turno si ninguna otra entrada espera.
+   */
+  _elegirTurno(estado, anterior, excluir) {
+    const entradas = estado.geo.entradas;
+    const orden = (estado.param.control.alternativa.orden || []).filter((x) => entradas.includes(x));
+    for (const x of entradas) if (!orden.includes(x)) orden.push(x);
+    const k = anterior ? orden.indexOf(anterior) + 1 : 0;
+    let mejor = null;
+    let max = 0;
+    for (const id of orden.slice(k).concat(orden.slice(0, k))) {
+      if (id === excluir) continue;
+      const n = this.colaAcceso(estado, id);
+      if (n > max) { max = n; mejor = id; }
+    }
+    if (!mejor && excluir && this.colaAcceso(estado, excluir) > 0) mejor = excluir;
+    return mejor;
+  },
+
+  _avanzarAgente(estado, dt) {
+    const a = estado.param.control.alternativa;
+    const tope = a.turnoMaximo ?? 40;
+    const minimo = Math.min(a.turnoMinimo ?? 5, tope);
+    const umbral = a.colaVaciado ?? 2;
+    const despeje = a.despeje ?? 0;
+    const ag = estado.control.agente || (estado.control.agente = { fase: 'espera', acceso: null, anterior: null, t: 0 });
+    ag.t += dt;
+    if (ag.fase === 'turno') {
+      // Fin del turno: la cola bajó a `umbral` (tras el mínimo) o se cumplió el tope de seguridad.
+      const agotado = ag.t >= tope - 1e-9;
+      if (agotado || (ag.t >= minimo - 1e-9 && this.colaAcceso(estado, ag.acceso) <= umbral)) {
+        // Si agotó el tope, el siguiente turno es para otra entrada (no se le encadena otro bloque).
+        ag.excluir = agotado ? ag.acceso : null;
+        ag.anterior = ag.acceso;
+        ag.acceso = null;
+        ag.t = 0;
+        ag.fase = despeje > 0 ? 'despeje' : 'espera';
+      }
+    }
+    if (ag.fase === 'despeje' && ag.t >= despeje - 1e-9) {
+      ag.fase = 'espera';
+      ag.t = 0;
+    }
+    if (ag.fase === 'espera') {
+      // Todo en rojo hasta que alguna entrada tenga vehículos esperando; entonces, la más cargada.
+      const id = this._elegirTurno(estado, ag.anterior, ag.excluir);
+      if (id) Object.assign(ag, { fase: 'turno', acceso: id, t: 0, excluir: null });
+    }
+  },
+
+  _faseAgente(estado) {
+    const a = estado.param.control.alternativa;
+    const ag = estado.control.agente;
+    if (!ag || ag.fase === 'espera') return { acceso: null, luz: 'rojo', restante: 0 };
+    if (ag.fase === 'despeje') return { acceso: null, luz: 'rojo', restante: Math.max(0, (a.despeje ?? 0) - ag.t) };
+    // `restante` es el máximo que le queda: el turno termina antes si la cola se vacía.
+    return { acceso: ag.acceso, luz: 'verde', restante: Math.max(0, (a.turnoMaximo ?? 40) - ag.t) };
   },
 
   _actualizarLuces(estado) {

@@ -26,7 +26,11 @@
       "verdeNO": 28, "verdeSE": 16, "verdeE": 14, "verdeNE": 18, "amarillo": 3, "todoRojo": 2,
       "_unidades": { "verdeNO": "s", "verdeSE": "s", "verdeE": "s", "verdeNE": "s", "amarillo": "s", "todoRojo": "s" }
     },
-    "alternativa": { "turno": 25, "despeje": 0, "orden": ["NO", "SE", "E", "NE"], "_unidades": { "turno": "s", "despeje": "s" } },
+    "alternativa": {
+      "turnoMaximo": 40, "turnoMinimo": 5, "colaVaciado": 2, "despeje": 0, "orden": ["NO", "SE", "E", "NE"],
+      "_nota": "Agente por demanda: da paso a la entrada con más vehículos esperando (ignora las vacías) y mantiene el turno hasta que su cola baja a colaVaciado o se cumple turnoMaximo. orden solo desempata (y fija la secuencia del semáforo).",
+      "_unidades": { "turnoMaximo": "s", "turnoMinimo": "s", "colaVaciado": "veh", "despeje": "s" }
+    },
     "_unidades": { "distanciaDecision": "m" }
   },
   "metricas": {

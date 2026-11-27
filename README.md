@@ -6,7 +6,7 @@ Simulador web en 2D de tráfico que modela la **Glorieta de La Lucha** (11.21875
 |---|---|
 | **Actual (prelación)** | Sin semáforo. Quien ya circula en el anillo tiene la vía; Carrera 15, Corredor inferior, Corredor Este y Calle 40 / Paralela solo entran si el próximo vehículo del anillo llega después de la *brecha crítica*. Carrera 15 Sur y el Ramal inferior solo reciben vehículos. |
 | **Semáforo virtual** | Verde, amarillo y todo-rojo en las cuatro entradas al anillo, una a la vez (Carrera 15 → Corredor inferior → Corredor Este → Calle 40 / Paralela). Nunca hay dos verdes a la vez; el anillo cede frente a la entrada en verde mientras no esté congestionado. |
-| **Alternativa (agentes)** | Agentes de tránsito dan paso alternado por bloques fijos de 25 s a cada entrada al anillo, en el mismo orden, deteniendo el anillo frente a la entrada que tiene el turno. |
+| **Alternativa (agentes)** | Agentes de tránsito que dan paso por demanda: en cada cambio de turno eligen la entrada con más vehículos esperando (ignoran las vacías) y mantienen el turno hasta que su cola baja a 2 vehículos o se cumple el tope de 40 s, deteniendo el anillo frente a la entrada que tiene el turno. |
 
 Los modos se cambian **en caliente**, sin recargar la página. El perfil de demanda (**hora pico / hora valle**) se elige en el panel.
 
@@ -97,7 +97,7 @@ Estados de un vehículo: `pendiente → aproximando → en_cola → cruzando →
 
 ## Cómo cambiar los datos
 
-1. Editar `geometria.json`, `conteos.json` o `parametros.json`. En `conteos.json` cada intervalo de 5 min trae el conteo de motos, carros y busetas por entrada (`NO` = Carrera 15, `SE` = Corredor inferior, `E` = Corredor Este, `NE` = Calle 40; `S` = Carrera 15 Sur y `SI` = Ramal inferior solo reciben salidas), y `destinos` dice qué fracción de cada entrada sale por cada acceso. Los verdes del semáforo están en `parametros.json → control.semaforo.verde<ID>` y el orden de los agentes en `control.alternativa.orden`.
+1. Editar `geometria.json`, `conteos.json` o `parametros.json`. En `conteos.json` cada intervalo de 5 min trae el conteo de motos, carros y busetas por entrada (`NO` = Carrera 15, `SE` = Corredor inferior, `E` = Corredor Este, `NE` = Calle 40; `S` = Carrera 15 Sur y `SI` = Ramal inferior solo reciben salidas), y `destinos` dice qué fracción de cada entrada sale por cada acceso. Los verdes del semáforo están en `parametros.json → control.semaforo.verde<ID>` y los agentes por demanda en `control.alternativa` (`turnoMaximo`, `colaVaciado`, `turnoMinimo`; `orden` solo desempata).
 2. Copiar el mismo contenido en `datos_respaldo.js` (si no, el modo offline usará los valores viejos).
 
 > Los conteos incluidos son **datos calibrados base** en 3 bloques de 5 min por perfil (pico 150–160 vehículos por bloque: Carrera 15 ≈ 75, Calle 40 ≈ 40, Corredor inferior ≈ 40, Corredor Este ≈ 23; ≈ 55 % motos, 35 % carros, 10 % busetas; valle ≈ 45 % del pico). Reemplácenlos con el aforo real del equipo.
