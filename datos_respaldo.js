@@ -11,7 +11,8 @@ window.DATOS_RESPALDO = {
     "lienzo": { "ancho": 150, "alto": 100 },
     "anillo": {
       "centro": [45, 50],
-      "izquierda": 26, "derecha": 65, "arriba": 25, "abajo": 75,
+      "radio": 25,
+      "notaRadio": "Radio del borde exterior en % del lado MENOR del lienzo (escala uniforme): 25 % de 100 m = 25 m. Así la glorieta es un círculo perfecto: arriba y = 25 %, abajo y = 75 %, izquierda x ≈ 28.33 %, derecha x ≈ 61.67 %.",
       "carriles": 2, "anchoCarril": 3.5, "berma": 0.6, "sobreancho": 1.5,
       "sentido": "antihorario"
     },
@@ -26,13 +27,13 @@ window.DATOS_RESPALDO = {
     "velocidadesMax": { "conector": 7.0, "anillo": 8.3, "salida": 9.7, "ramal": 8.3, "puente": 16.7 },
 
     "curvas": {
-      "C15_oeste":  [{ "bezier": [[30, 0], [30, 18], [26, 34], [26, 48]] }],
-      "C15_este":   [{ "bezier": [[37, 0], [37, 11], [42, 22.9], [51, 26]] }],
-      "C15S_oeste": [{ "bezier": [[26, 50], [26, 62], [16, 82], [10, 100]] }],
-      "C40_norte":  [{ "linea": [[57, 29], [99, 0]] }],
-      "C40_sur":    [{ "linea": [[62, 34], [100, 7]] }],
-      "E_entrada":  [{ "bezier": [[100, 43], [88, 43.4], [76, 44.6], [65, 47]] }],
-      "SI_salida":  [{ "linea": [[41, 74], [28, 100]] }],
+      "C15_oeste":  [{ "bezier": [[30, 0], [30, 16], [28.33, 32], [28.33, 48]] }],
+      "C15_este":   [{ "bezier": [[37, 0], [37, 11], [40.4, 22.3], [49.31, 25.85]] }],
+      "C15S_oeste": [{ "bezier": [[28.33, 50], [28.33, 62], [17, 82], [10, 100]] }],
+      "C40_norte":  [{ "linea": [[55.21, 30.24], [99, 0]] }],
+      "C40_sur":    [{ "linea": [[58.9, 36.2], [100, 7]] }],
+      "E_entrada":  [{ "bezier": [[100, 43], [87, 43.4], [74, 44.6], [61.6, 47]] }],
+      "SI_salida":  [{ "linea": [[40.7, 74.15], [28, 100]] }],
       "corredor": [
         { "haciaAnillo": { "desde": [33, 100], "theta": 277.5, "fuera": 1.6, "fuerza": [0.35, 0.4] } },
         { "arcoAnillo": { "desde": 277.5, "hasta": 310, "fuera": 1.6 } },
@@ -41,9 +42,9 @@ window.DATOS_RESPALDO = {
     },
 
     "superficies": [
-      { "nombre": "Carrera 15 (embudo 9:00–12:30)", "contorno": [{ "punto": [30, -4] }, { "curva": "C15_oeste" }, { "punto": [26, 50] }, { "punto": [45, 50] }, { "curvaInvertida": "C15_este" }, { "punto": [37, -4] }] },
-      { "nombre": "Carrera 15 Sur (bajo el costado oeste del puente)", "contorno": [{ "punto": [26, 48] }, { "curva": "C15S_oeste" }, { "punto": [8.8, 104] }, { "punto": [15, 104] }, { "punto": [15, 100] }, { "punto": [34, 71] }, { "punto": [45, 50] }] },
-      { "nombre": "Calle 40 / Paralela (1:15–2:00)", "contorno": [{ "punto": [45, 50] }, { "punto": [57, 29] }, { "punto": [103.2, -2.9] }, { "punto": [104.6, 3.8] }, { "punto": [62, 34] }] }
+      { "nombre": "Carrera 15 (embudo 9:00–12:30)", "contorno": [{ "punto": [30, -4] }, { "curva": "C15_oeste" }, { "punto": [28.33, 50] }, { "punto": [45, 50] }, { "curvaInvertida": "C15_este" }, { "punto": [37, -4] }] },
+      { "nombre": "Carrera 15 Sur (bajo el costado oeste del puente)", "contorno": [{ "punto": [28.33, 48] }, { "curva": "C15S_oeste" }, { "punto": [8.8, 104] }, { "punto": [15, 104] }, { "punto": [15, 100] }, { "punto": [33.21, 67.68] }, { "punto": [45, 50] }] },
+      { "nombre": "Calle 40 / Paralela (1:15–2:00)", "contorno": [{ "punto": [45, 50] }, { "punto": [55.21, 30.24] }, { "punto": [103.2, -2.9] }, { "punto": [104.6, 3.8] }, { "punto": [58.9, 36.2] }] }
     ],
 
     "accesos": [
@@ -117,8 +118,8 @@ window.DATOS_RESPALDO = {
       "anchoCarril": 3.2,
       "baranda": 0.4,
       "calzadas": [
-        { "id": "sup", "nombre": "Calzada superior (NE → SO)", "puntos": [[100, 13], [63, 37], [48, 53], [34, 71], [15, 100]] },
-        { "id": "inf", "nombre": "Calzada inferior (SO → NE)", "puntos": [[22, 100], [40, 74], [54, 58], [65, 47], [100, 23]] }
+        { "id": "sup", "nombre": "Calzada superior (NE → SO)", "puntos": [[100, 13], [60.02, 39.16], [47.33, 52.2], [33.21, 67.68], [15, 100]] },
+        { "id": "inf", "nombre": "Calzada inferior (SO → NE)", "puntos": [[22, 100], [40.69, 74.15], [55.33, 55], [61.58, 47.52], [100, 23]] }
       ]
     },
 

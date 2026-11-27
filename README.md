@@ -12,19 +12,19 @@ Los modos se cambian **en caliente**, sin recargar la página. El perfil de dema
 
 ## Geometría modelada
 
-**Nivel 1 (suelo).** Rotonda con centro en (45 %, 50 %) y borde exterior en x = 26 %–65 %, y = 25 %–75 % (anillo elíptico de **2 carriles, sentido antihorario**: ← arriba, ↓ izquierda, → abajo, ↑ derecha) alrededor de la isla verde. Posiciones en el anillo como reloj: 12:00 arriba, 3:00 derecha.
+**Nivel 1 (suelo).** Rotonda con centro en (45 %, 50 %) y radio de 25 % del lado menor del lienzo (25 m; escala uniforme, así es un **círculo perfecto**: y = 25 %–75 %, x ≈ 28.3 %–61.7 %) (anillo de **2 carriles, sentido antihorario**: ← arriba, ↓ izquierda, → abajo, ↑ derecha) alrededor de la isla verde. Posiciones en el anillo como reloj: 12:00 arriba, 3:00 derecha.
 
 | Acceso (id) | Trazado (en % del lienzo) | Sentidos |
 |---|---|---|
-| Carrera 15 (NO) | embudo entre el borde oeste (30, 0) → (26, 48), tangente a las 9:00, y el borde este (37, 0) → (51, 26), tangente a las 12:30 | calzada oeste: 2 carriles que **entran** (↓, con filtrado de motos); calzada este: 1 carril que **sale** (↑) |
-| Carrera 15 Sur (S) | continuación sin quiebre del borde oeste: (26, 50) → (10, 100), bajo el costado oeste de la calzada superior del puente | solo **salida** (↙) |
-| Calle 40 / Paralela (NE) | bordes paralelos (57, 29) → (99, 0) y (62, 34) → (100, 7), encima del puente | carril superior **entra** (↙); inferior **sale** (↗) |
-| Corredor Este (E) | ramal medio-derecho (100, 43) → 3:00 (65, 47); salida por la línea continua desde las 5:00 hasta (100, 48) | **entra** (←) y **sale** (→) |
+| Carrera 15 (NO) | embudo entre el borde oeste (30, 0) → (28.3, 48), tangente a las 9:00, y el borde este (37, 0) → (49.3, 25.9), tangente a las 12:30 | calzada oeste: 2 carriles que **entran** (↓, con filtrado de motos); calzada este: 1 carril que **sale** (↑) |
+| Carrera 15 Sur (S) | continuación sin quiebre del borde oeste: (28.3, 50) → (10, 100), bajo el costado oeste de la calzada superior del puente | solo **salida** (↙) |
+| Calle 40 / Paralela (NE) | bordes paralelos (55.2, 30.2) → (99, 0) y (58.9, 36.2) → (100, 7), que arrancan sobre el perímetro, encima del puente | carril superior **entra** (↙); inferior **sale** (↗) |
+| Corredor Este (E) | ramal medio-derecho (100, 43) → 3:00 (61.6, 47); salida por la línea continua desde las 5:00 hasta (100, 48) | **entra** (←) y **sale** (→) |
 | Corredor inferior (SE) | línea continua desde (33, 100), tangente al anillo entre 5:45 y 5:00 | un carril que **entra** (↗); en la línea de ceda se divide: unos entran al anillo y otros siguen de largo (giro libre) hacia el Este, cediendo al unirse a la salida Este |
-| Ramal inferior (SI) | 6:30 (41, 74) → (28, 100), justo bajo la calzada inferior del puente | solo **salida** (↓) |
+| Ramal inferior (SI) | 6:30 (40.7, 74.2) → (28, 100), justo bajo la calzada inferior del puente | solo **salida** (↓) |
 
 - **Isletas triangulares:** la pequeña (bajo el puente) entre el Ramal inferior, el Corredor inferior y el arco sur; la grande, verde y con árboles, entre la entrada Este, la salida Este y el arco 3:00–5:00.
-- **Nivel 2: Puente Ruta 90.** Dos calzadas separadas de 2 carriles, asfalto opaco, barandas y sombra. Cruzan **por encima del cuadrante sureste del anillo y de la isla**: calzada superior (100, 13) → (63, 37) → (48, 53) → (34, 71) → (15, 100), sentido **noreste → suroeste (↙)**; calzada inferior (22, 100) → (40, 74) → (54, 58) → (65, 47) → (100, 23), sentido **suroeste → noreste (↗)**. Su tráfico (1800 veh/h por sentido en pico, 900 en valle) nunca cede, frena ni choca con el nivel 1 y no cuenta en las métricas.
+- **Nivel 2: Puente Ruta 90.** Dos calzadas separadas de 2 carriles, asfalto opaco, barandas y sombra. Cruzan **por encima del cuadrante sureste del anillo y de la isla**: calzada superior (100, 13) → (60.0, 39.2) → (47.3, 52.2) → (33.2, 67.7) → (15, 100), sentido **noreste → suroeste (↙)**; calzada inferior (22, 100) → (40.7, 74.2) → (55.3, 55) → (61.6, 47.5) → (100, 23), sentido **suroeste → noreste (↗)**. Su tráfico (1800 veh/h por sentido en pico, 900 en valle) nunca cede, frena ni choca con el nivel 1 y no cuenta en las métricas.
 - **Orden de dibujo:** suelo → vehículos del nivel 1 → sombra y tableros del puente (tapan a los de abajo en los cruces de 7:30, 6:30, 2:30 y 3:00) → vehículos del puente. Señales de ceda, semáforos y agentes se pintan encima como indicadores, porque las entradas Este y Corredor inferior quedan bajo el puente.
 - **Cómo se describe en `geometria.json`:** `curvas` (bordes y trazos con piezas `linea`, `bezier`, `spline`, `arcoAnillo`, `haciaAnillo`, `desdeAnillo`), `superficies` (polígonos de calzada a partir de los bordes) y, por acceso, `entradas` / `salida` / `ramal` como carriles paralelos a una curva (`desplazamiento` en m, `invertir`). La línea de ceda y el inicio de cada salida se calculan solos (`distanciaCeda`, `distanciaSalida`); los conectores al anillo usan `anguloEntrada` / `anguloSalida` (grados de anillo, general o por acceso).
 - **Circulación por la derecha:** en toda vía de doble sentido cada vehículo va por el carril a su derecha.

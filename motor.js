@@ -6,7 +6,7 @@
  * derecha. Aquí se convierte todo a metros (mismo origen, y hacia abajo) y
  * se arma una RED DE TRAMOS (polilíneas):
  *   entrada (hasta la línea de ceda) → conector (curva) →
- *   anillo (elipse cerrada, 2 carriles, antihorario) → salida (curva) →
+ *   anillo (círculo cerrado, 2 carriles, antihorario) → salida (curva) →
  *   cola de la salida (vía hacia afuera del lienzo).
  * Un acceso puede tener además un RAMAL de giro libre (p. ej. el corredor
  * inferior que sigue de largo hacia el Este rozando el anillo) que no pasa
@@ -107,19 +107,23 @@ const Red = {
     return pts;
   },
 
-  /** Curva suave (Catmull-Rom) que pasa por todos los puntos. */
+  /**
+   * Curva suave que pasa por todos los puntos. La dirección en cada punto es la de sus vecinos
+   * (Catmull-Rom), pero el largo de los controles se ajusta a cada segmento: así un tramo corto junto
+   * a uno largo no hace un quiebre ni se pasa de largo.
+   */
   catmullRom(pts, n) {
     const res = [pts[0]];
-    const tan = (i) => {
+    const dir = (i) => {
       const a = pts[Math.max(0, i - 1)];
       const b = pts[Math.min(pts.length - 1, i + 1)];
-      const f = i === 0 || i === pts.length - 1 ? 1 : 0.5;
-      return [(b[0] - a[0]) * f, (b[1] - a[1]) * f];
+      return this.unitario([b[0] - a[0], b[1] - a[1]]);
     };
     for (let i = 0; i < pts.length - 1; i++) {
-      const m0 = tan(i), m1 = tan(i + 1);
       const p0 = pts[i], p3 = pts[i + 1];
-      const seg = this.bezier(p0, [p0[0] + m0[0] / 3, p0[1] + m0[1] / 3], [p3[0] - m1[0] / 3, p3[1] - m1[1] / 3], p3, n);
+      const h = Math.hypot(p3[0] - p0[0], p3[1] - p0[1]) / 3;
+      const m0 = dir(i), m1 = dir(i + 1);
+      const seg = this.bezier(p0, [p0[0] + m0[0] * h, p0[1] + m0[1] * h], [p3[0] - m1[0] * h, p3[1] - m1[1] * h], p3, n);
       res.push(...seg.slice(1));
     }
     return res;
@@ -270,8 +274,11 @@ const Motor = {
     const aM = (p) => [(p[0] * W) / 100, (p[1] * H) / 100]; // % del lienzo → metros
     const an = g.anillo;
     const C = aM(an.centro);
-    const A = ((an.derecha - an.izquierda) * W) / 200; // semieje horizontal del borde exterior (m)
-    const B = ((an.abajo - an.arriba) * H) / 200;      // semieje vertical
+    // Círculo perfecto: el radio usa UNA sola escala, la del lado menor del lienzo (nunca % de ancho y de
+    // alto por separado, que en un lienzo 3:2 deformarían la glorieta en un óvalo).
+    const R = (an.radio * Math.min(W, H)) / 100; // radio del borde exterior (m)
+    const A = R; // semiejes iguales: el resto del código (elipse, tangente, theta, fuera) queda en un círculo
+    const B = R;
     const wA = an.anchoCarril;
     const nAn = an.carriles;
     const bA = an.berma;
@@ -281,7 +288,7 @@ const Motor = {
     const dCeda = g.distanciaCeda ?? 3;
     const dSal = g.distanciaSalida ?? 3;
 
-    // Anillo elíptico: cada "inset" es la distancia hacia adentro desde el borde exterior.
+    // Anillo circular: cada "inset" es la distancia hacia adentro desde el borde exterior.
     const insetCarril = (k) => bA + wA * (nAn - 1 - k + 0.5); // k = 0 interno ... nAn-1 externo
     const insetInterno = 2 * bA + wA * nAn;                     // borde interior de la calzada del anillo
     const elipse = (inset, th) => {
@@ -412,7 +419,7 @@ const Motor = {
       return 0;
     };
 
-    // ---- Anillo: una elipse cerrada por carril; s crece en sentido antihorario desde las 3:00 ----
+    // ---- Anillo: un círculo cerrado por carril; s crece en sentido antihorario desde las 3:00 ----
     const N = 720;
     for (let k = 0; k < nAn; k++) {
       const pts = [];
