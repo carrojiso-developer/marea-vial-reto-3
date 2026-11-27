@@ -102,14 +102,6 @@ Estados de un vehículo: `pendiente → aproximando → en_cola → cruzando →
 
 > Los conteos incluidos son **datos calibrados base** en 3 bloques de 5 min por perfil (pico 150–160 vehículos por bloque: Carrera 15 ≈ 75, Calle 40 ≈ 40, Corredor inferior ≈ 40, Corredor Este ≈ 23; ≈ 55 % motos, 35 % carros, 10 % busetas; valle ≈ 45 % del pico). Reemplácenlos con el aforo real del equipo.
 
-## Próximos pasos sugeridos
-
-- [ ] Medir en campo radios, anchos y ángulos reales de la glorieta y la posición del puente → `geometria.json`.
-- [ ] Turnos de semáforo/agentes proporcionales a la demanda de cada acceso (hoy, en hora pico, la Carrera 15 acumula las colas más largas con semáforo y agentes).
-- [ ] Aforo real por intervalos de 5 min y proporciones de destino → `conteos.json`.
-- [ ] Calibrar velocidades, brecha crítica y aceleraciones con videos.
-- [ ] Brecha crítica más corta para motos (aceptan huecos menores que los carros).
-- [ ] Gráfica de la cola en el tiempo.
 
 ---
 
