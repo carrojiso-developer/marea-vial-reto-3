@@ -122,7 +122,7 @@ window.DATOS_RESPALDO = {
       ]
     },
 
-    "arboles": [[72, 52.2], [77, 50.5], [83, 48.8], [43.2, 77.2]]
+    "arboles": [[72, 52.2], [77, 50.5], [83, 48.8]]
   },
   conteos: {
     "descripcion": "Aforo por bloques de 5 minutos en los accesos de ENTRADA de la Glorieta de La Lucha (NO = Carrera 15 ↓, NE = Calle 40 / Paralela ↙, SE = Corredor inferior ↗, E = Corredor Este ←). Los de SE que van al Este siguen de largo por el corredor sin entrar al anillo. Carrera 15 Sur (S) y el Ramal inferior (SI) solo reciben vehículos. Datos calibrados base: ~55% motos, 35% carros, 10% busetas; valle ≈ 45% del pico. Reemplazar cualquier cifra con el conteo real del equipo.",
@@ -163,20 +163,39 @@ window.DATOS_RESPALDO = {
     }
   },
   parametros: {
-    "simulacion": { "dt": 0.1, "semilla": 2026, "minutosComparacion": 15 },
+    "simulacion": { "dt": 0.1, "semilla": 2026, "minutosComparacion": 15, "_unidades": { "dt": "s", "minutosComparacion": "min" } },
     "vehiculos": {
-      "moto": { "largo": 2.0, "ancho": 0.8, "velDeseada": 11.1, "acelMax": 3.0, "decelComoda": 3.5, "decelMax": 7.0, "distMinima": 1.0, "tiempoSeguimiento": 0.8 },
-      "carro": { "largo": 4.5, "ancho": 1.8, "velDeseada": 11.1, "acelMax": 2.0, "decelComoda": 3.0, "decelMax": 7.5, "distMinima": 2.0, "tiempoSeguimiento": 1.4 },
-      "buseta": { "largo": 8.5, "ancho": 2.4, "velDeseada": 9.7, "acelMax": 1.2, "decelComoda": 2.5, "decelMax": 6.0, "distMinima": 2.5, "tiempoSeguimiento": 1.6 }
+      "moto": {
+        "largo": 2.0, "ancho": 0.8, "velDeseada": 11.1, "acelMax": 3.0, "decelComoda": 3.5, "decelMax": 7.0, "distMinima": 1.0, "tiempoSeguimiento": 0.8,
+        "_unidades": { "largo": "m", "ancho": "m", "velDeseada": "m/s", "acelMax": "m/s²", "decelComoda": "m/s²", "decelMax": "m/s²", "distMinima": "m", "tiempoSeguimiento": "s" }
+      },
+      "carro": {
+        "largo": 4.5, "ancho": 1.8, "velDeseada": 11.1, "acelMax": 2.0, "decelComoda": 3.0, "decelMax": 7.5, "distMinima": 2.0, "tiempoSeguimiento": 1.4,
+        "_unidades": { "largo": "m", "ancho": "m", "velDeseada": "m/s", "acelMax": "m/s²", "decelComoda": "m/s²", "decelMax": "m/s²", "distMinima": "m", "tiempoSeguimiento": "s" }
+      },
+      "buseta": {
+        "largo": 8.5, "ancho": 2.4, "velDeseada": 9.7, "acelMax": 1.2, "decelComoda": 2.5, "decelMax": 6.0, "distMinima": 2.5, "tiempoSeguimiento": 1.6,
+        "_unidades": { "largo": "m", "ancho": "m", "velDeseada": "m/s", "acelMax": "m/s²", "decelComoda": "m/s²", "decelMax": "m/s²", "distMinima": "m", "tiempoSeguimiento": "s" }
+      }
     },
-    "motos": { "filtrado": true, "brechaFiltrado": 1.5, "velMaxFiltrado": 5.0, "distanciaInicioFiltrado": 12 },
+    "motos": {
+      "filtrado": true, "brechaFiltrado": 1.5, "velMaxFiltrado": 5.0, "distanciaInicioFiltrado": 12,
+      "_unidades": { "filtrado": "booleano", "brechaFiltrado": "m", "velMaxFiltrado": "m/s", "distanciaInicioFiltrado": "m" }
+    },
     "control": {
       "modoInicial": "actual",
       "distanciaDecision": 25,
-      "actual": { "brechaCritica": 3.5 },
-      "semaforo": { "verdeNO": 28, "verdeSE": 16, "verdeE": 14, "verdeNE": 18, "amarillo": 3, "todoRojo": 2 },
-      "alternativa": { "turno": 25, "despeje": 0, "orden": ["NO", "SE", "E", "NE"] }
+      "actual": { "brechaCritica": 3.5, "_unidades": { "brechaCritica": "s" } },
+      "semaforo": {
+        "verdeNO": 28, "verdeSE": 16, "verdeE": 14, "verdeNE": 18, "amarillo": 3, "todoRojo": 2,
+        "_unidades": { "verdeNO": "s", "verdeSE": "s", "verdeE": "s", "verdeNE": "s", "amarillo": "s", "todoRojo": "s" }
+      },
+      "alternativa": { "turno": 25, "despeje": 0, "orden": ["NO", "SE", "E", "NE"], "_unidades": { "turno": "s", "despeje": "s" } },
+      "_unidades": { "distanciaDecision": "m" }
     },
-    "metricas": { "ventanaCapacidad": 60, "umbralVelocidadCola": 1.0 }
+    "metricas": {
+      "ventanaCapacidad": 60, "umbralVelocidadCola": 1.0,
+      "_unidades": { "ventanaCapacidad": "s", "umbralVelocidadCola": "m/s" }
+    }
   },
 };

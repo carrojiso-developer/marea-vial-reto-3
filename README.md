@@ -1,34 +1,33 @@
 # Marea Vial · Reto 3 — Simulador 2D de la Glorieta de La Lucha (Santa Marta)
 
-Simulador web en 2D de tráfico que modela la **Glorieta de La Lucha** (11.218753, -74.190173) en vista aérea de **dos niveles**, con el norte arriba como el mapa real. **Nivel inferior:** rotonda circular con isla verde y anillo de **2 carriles en sentido antihorario**; a la izquierda, la **Carrera 15** baja desde el noroeste en una sola calzada, se une **tangencialmente** al borde izquierdo del anillo y sigue en diagonal hacia el suroeste como **Carrera 15 Sur** (↓), con un borde exterior continuo; arriba a la derecha, la **Calle 40 / Paralela** de doble calzada; abajo a la derecha, la **Troncal del Caribe inferior**, una calzada curva de un sentido que sube y gira hacia la Troncal del Caribe rozando el borde inferior derecho del anillo, unida a él por **dos enlaces triangulares** (abajo entra al anillo; a la derecha recibe la salida del anillo). **Nivel superior:** el **Puente Ruta 90 (Troncal del Caribe)**, dos calzadas elevadas separadas que suben desde el suroeste, hacen un quiebre suave encima del cuadrante inferior derecho y siguen hacia el noreste, por encima de los enlaces. Compara tres formas de operar la glorieta:
+Simulador web en 2D de tráfico que modela la **Glorieta de La Lucha** (11.218753, -74.190173) en vista aérea de **dos niveles**, con el norte arriba. Lienzo **3:2** (150 m × 100 m); toda la geometría de `geometria.json` está en **% del lienzo** (`(0, 0)` arriba a la izquierda, `(100, 100)` abajo a la derecha). Compara tres formas de operar la glorieta:
 
 | Modo | Qué representa |
 |---|---|
-| **Actual (prelación)** | Sin semáforo. Quien ya circula en el anillo tiene la vía; Carrera 15, Calle 40 / Paralela y Troncal inferior solo entran si el próximo vehículo del anillo llega después de la *brecha crítica*. Carrera 15 Sur y la salida Este (Troncal del Caribe) solo reciben vehículos. |
-| **Semáforo virtual** | Verde, amarillo y todo-rojo en las tres entradas al anillo, una a la vez (Carrera 15 → Troncal inferior → Calle 40 / Paralela). Nunca hay dos verdes a la vez; el anillo cede frente a la entrada en verde mientras no esté congestionado. |
+| **Actual (prelación)** | Sin semáforo. Quien ya circula en el anillo tiene la vía; Carrera 15, Corredor inferior, Corredor Este y Calle 40 / Paralela solo entran si el próximo vehículo del anillo llega después de la *brecha crítica*. Carrera 15 Sur y el Ramal inferior solo reciben vehículos. |
+| **Semáforo virtual** | Verde, amarillo y todo-rojo en las cuatro entradas al anillo, una a la vez (Carrera 15 → Corredor inferior → Corredor Este → Calle 40 / Paralela). Nunca hay dos verdes a la vez; el anillo cede frente a la entrada en verde mientras no esté congestionado. |
 | **Alternativa (agentes)** | Agentes de tránsito dan paso alternado por bloques fijos de 25 s a cada entrada al anillo, en el mismo orden, deteniendo el anillo frente a la entrada que tiene el turno. |
 
 Los modos se cambian **en caliente**, sin recargar la página. El perfil de demanda (**hora pico / hora valle**) se elige en el panel.
 
 ## Geometría modelada
 
-| Acceso (id) | Rumbo | Calzadas | Isleta |
-|---|---|---|---|
-| Carrera 15 (NO) | 115° | una sola calzada de 2 carriles de **entrada** que baja desde el noroeste y se une al borde izquierdo del anillo casi en línea recta (eje corrido 11 m al oeste) | — |
-| Carrera 15 Sur (S) | 245° | continuación de la Carrera 15: 2 carriles de **salida** (↓) en diagonal hacia el suroeste, a la izquierda del puente | — |
-| Troncal del Caribe inferior (SE) | 300° | calzada de un sentido que sube desde abajo: 1 carril entra al anillo por el borde inferior (enlace triangular) y el **ramal** derecho sigue hacia la Troncal del Caribe (→), uniéndose a la salida Este en el borde derecho (segundo enlace triangular); pasa por debajo del puente | ramal + isleta |
-| Troncal del Caribe, salida Este (E) | 340° | solo salida (2 carriles), abajo a la derecha del puente | — |
-| Calle 40 / Paralela (NE) | 45° | 1 de entrada + 1 de salida; entra al cuadrante superior derecho, encima del puente | triangular |
+**Nivel 1 (suelo).** Rotonda con centro en (45 %, 50 %) y borde exterior en x = 26 %–65 %, y = 25 %–75 % (anillo elíptico de **2 carriles, sentido antihorario**: ← arriba, ↓ izquierda, → abajo, ↑ derecha) alrededor de la isla verde. Posiciones en el anillo como reloj: 12:00 arriba, 3:00 derecha.
 
-- **Carrera 15 tangente:** la Carrera 15 (solo entrada) roza el borde izquierdo del anillo y se une a él casi en línea recta, sin isleta; la Carrera 15 Sur (solo salida) se desprende más adelante, de modo que la salida nunca queda antes de la unión. Entre las dos, un relleno de calzada (`uniones` en `geometria.json`) deja el borde exterior continuo. En cada acceso: `desplazamiento` (corre el eje), `anguloConexion` propio y `tMinimo` (aleja la línea de ceda para que las curvas empiecen fuera del anillo). Si la salida quedara antes de la unión, los movimientos se cruzarían y en hora pico el anillo se trabaría.
-- **Anillo bajo el puente:** el anillo sigue completo por el costado derecho; se ve entre las dos calzadas elevadas y a ambos lados.
-- **Enlaces triangulares de la Troncal inferior:** abajo, la isleta triangular entre el carril que entra al anillo y el ramal que sigue de largo; a la derecha, el ramal cede el paso al unirse a la salida Este del anillo.
-- **Puente Ruta 90 (Troncal del Caribe), nivel superior:** dos calzadas elevadas **separadas** (2 carriles cada una: suroeste → noreste y noreste → suroeste) que suben inclinadas desde abajo a la izquierda (58°), hacen un **quiebre suave** encima del borde sureste de la glorieta y siguen hacia arriba a la derecha (28°), entre la Calle 40 y la salida Este (`puente.quiebre` en `geometria.json`). Se dibujan opacas, con barandas en ambos bordes, pilas entre las dos calzadas y sombra sobre las vías de abajo. Su tráfico (motos, carros y busetas; 1800 veh/h por sentido en pico y 900 en valle) va por encima y no se mezcla con la glorieta.
-- **Entradas de un solo carril** (Calle 40): tienen un conector a cada carril del anillo y cada vehículo toma el que le sirve según su destino.
-- **Ángulos:** los accesos no son ortogonales. Se separaron lo suficiente para que quien sale hacia un acceso no tenga que cruzar justo donde entran los del acceso anterior.
-- **Otros elementos opcionales** en `geometria.json`: `ramal` de giro libre de un acceso a otro (como el de la versión anterior, Carrera 15 Sur → Calle 41a), `referencias` (p. ej. un puente peatonal), `isla.monumento`, `posEtiqueta` de un acceso (aquí se usa para que los rótulos no queden debajo del puente) y otras formas de puente: recto (`rumboEje`) o curvo entre dos accesos (`desde`/`hacia`/`radioCurva`).
-- Rumbos en grados: 0 = este, 90 = norte, sentido antihorario. Todo se ajusta en `geometria.json` (radio de la isla, ancho de carril y de separadores, tipo de isleta, ángulos, puente y referencias).
-- **Lado de la entrada:** con circulación por la derecha y anillo antihorario, en cada acceso la calzada de entrada queda del lado antihorario del separador.
+| Acceso (id) | Trazado (en % del lienzo) | Sentidos |
+|---|---|---|
+| Carrera 15 (NO) | embudo entre el borde oeste (30, 0) → (26, 48), tangente a las 9:00, y el borde este (37, 0) → (51, 26), tangente a las 12:30 | calzada oeste: 2 carriles que **entran** (↓, con filtrado de motos); calzada este: 1 carril que **sale** (↑) |
+| Carrera 15 Sur (S) | continuación sin quiebre del borde oeste: (26, 50) → (10, 100), bajo el costado oeste de la calzada superior del puente | solo **salida** (↙) |
+| Calle 40 / Paralela (NE) | bordes paralelos (57, 29) → (99, 0) y (62, 34) → (100, 7), encima del puente | carril superior **entra** (↙); inferior **sale** (↗) |
+| Corredor Este (E) | ramal medio-derecho (100, 43) → 3:00 (65, 47); salida por la línea continua desde las 5:00 hasta (100, 48) | **entra** (←) y **sale** (→) |
+| Corredor inferior (SE) | línea continua desde (33, 100), tangente al anillo entre 5:45 y 5:00 | un carril que **entra** (↗); en la línea de ceda se divide: unos entran al anillo y otros siguen de largo (giro libre) hacia el Este, cediendo al unirse a la salida Este |
+| Ramal inferior (SI) | 6:30 (41, 74) → (28, 100), justo bajo la calzada inferior del puente | solo **salida** (↓) |
+
+- **Isletas triangulares:** la pequeña (bajo el puente) entre el Ramal inferior, el Corredor inferior y el arco sur; la grande, verde y con árboles, entre la entrada Este, la salida Este y el arco 3:00–5:00.
+- **Nivel 2: Puente Ruta 90.** Dos calzadas separadas de 2 carriles, asfalto opaco, barandas y sombra. Cruzan **por encima del cuadrante sureste del anillo y de la isla**: calzada superior (100, 13) → (63, 37) → (48, 53) → (34, 71) → (15, 100), sentido **noreste → suroeste (↙)**; calzada inferior (22, 100) → (40, 74) → (54, 58) → (65, 47) → (100, 23), sentido **suroeste → noreste (↗)**. Su tráfico (1800 veh/h por sentido en pico, 900 en valle) nunca cede, frena ni choca con el nivel 1 y no cuenta en las métricas.
+- **Orden de dibujo:** suelo → vehículos del nivel 1 → sombra y tableros del puente (tapan a los de abajo en los cruces de 7:30, 6:30, 2:30 y 3:00) → vehículos del puente. Señales de ceda, semáforos y agentes se pintan encima como indicadores, porque las entradas Este y Corredor inferior quedan bajo el puente.
+- **Cómo se describe en `geometria.json`:** `curvas` (bordes y trazos con piezas `linea`, `bezier`, `spline`, `arcoAnillo`, `haciaAnillo`, `desdeAnillo`), `superficies` (polígonos de calzada a partir de los bordes) y, por acceso, `entradas` / `salida` / `ramal` como carriles paralelos a una curva (`desplazamiento` en m, `invertir`). La línea de ceda y el inicio de cada salida se calculan solos (`distanciaCeda`, `distanciaSalida`); los conectores al anillo usan `anguloEntrada` / `anguloSalida` (grados de anillo, general o por acceso).
+- **Circulación por la derecha:** en toda vía de doble sentido cada vehículo va por el carril a su derecha.
 
 ## Cómo abrirlo
 
@@ -42,14 +41,14 @@ No hay que instalar nada: es HTML, CSS y JavaScript puro, sin npm, sin framework
 ```
 index.html          Interfaz: lienzo, panel de control, métricas y comparador
 styles.css          Estilos (claro/oscuro automático)
-motor.js            Red de tramos (entradas, conectores, anillo, salidas, puente), puntos de conflicto y reloj
+motor.js            Geometría en % → red de tramos en m (entradas, conectores, anillo, salidas, ramal, puente), conflictos y reloj
 llegadas.js         Generador mulberry32 con semilla + llegadas Poisson por intervalo de 5 min, destino y ruta
 control.js          Los 3 modos + quién cede en cada punto de conflicto (prelación, semáforo, agentes)
 vehiculos.js        Movimiento (modelo IDM) sobre la ruta, distancia mínima, filtrado de motos
 metricas.js         Capacidad de evacuación, cola máxima por entrada, espera promedio
 dibujo.js           Renderizado en <canvas> (solo lee el estado del motor)
 interfaz.js         Conecta botones y campos con el motor; bucle de animación
-geometria.json      Medidas de la glorieta, accesos y puente
+geometria.json      Trazado en % del lienzo: anillo, bordes, accesos, isletas y puente
 conteos.json        Aforo por intervalos de 5 min (perfiles pico y valle), destinos y tráfico del puente
 parametros.json     Vehículos, motos, control, semilla, dt y métricas
 datos_respaldo.js   Copia exacta de los tres .json como window.DATOS_RESPALDO (modo offline)
@@ -69,7 +68,7 @@ El motor **no conoce el canvas ni el DOM**. Gracias a eso, el comparador corre l
 
 ## Modelo
 
-- **Red de tramos:** cada vehículo recorre una ruta *entrada → conector → anillo → salida* (o *entrada → ramal → salida* si hay un ramal de giro libre) (polilíneas en metros) y su posición es la distancia `d` del frente sobre esa ruta.
+- **Red de tramos:** cada vehículo recorre una ruta *entrada → conector → anillo → salida → cola de la salida* (o *entrada → ramal → cola de la salida* en el giro libre del Corredor inferior) (polilíneas en metros) y su posición es la distancia `d` del frente sobre esa ruta.
 - **Carril:** quien sale en la primera mitad de la vuelta usa el carril externo; quien va más lejos (o hace retorno) usa el interno.
 - **Puntos de conflicto:** se calculan solos a partir de la geometría (fusiones al anillo, cruces de los carriles internos con el externo y divergencias de las salidas). Prioridad: salida > anillo > entrada; en semáforo/agentes la entrada con turno pasa por encima del anillo.
 - **Reglas anti-traba** (con varias entradas, un anillo de dos carriles puede trabarse en círculo):
@@ -83,8 +82,8 @@ El motor **no conoce el canvas ni el DOM**. Gracias a eso, el comparador corre l
   - *Moto*: 2 m, acelera 3 m/s², se **filtra** (RF-04).
   - *Carro*: 4.5 m, 2 m/s², no se filtra.
   - *Buseta*: 8.5 m, 1.2 m/s², no se filtra.
-- **Filtrado de motos (RF-04):** una moto detenida detrás de una fila de carros o busetas pasa al carril virtual entre los dos carriles de entrada y avanza hasta la línea de ceda; allí se mete al conector de su carril delante del carro parado (regla de *cremallera*: los carros que todavía no llegan a la línea la dejan pasar). Las motos que esperan fuera del tramo dibujado también entran directo al filtro. Solo se filtra si le conviene: si la fila de motos en el filtro es más larga que la de su carril, se queda en el carril. La Calle 40 (un solo carril de entrada) no tiene filtro.
-- **Puente vehicular elevado:** red aparte (nivel elevado) con su propio generador aleatorio. Pasa por encima de la glorieta sin interactuar con ella y no cuenta en las métricas.
+- **Filtrado de motos (RF-04):** una moto detenida detrás de una fila de carros o busetas pasa al carril virtual entre los dos carriles de entrada y avanza hasta la línea de ceda; allí se mete al conector de su carril delante del carro parado (regla de *cremallera*: los carros que todavía no llegan a la línea la dejan pasar). Las motos que esperan fuera del tramo dibujado también entran directo al filtro. Solo se filtra si le conviene: si la fila de motos en el filtro es más larga que la de su carril, se queda en el carril. Solo la Carrera 15 tiene dos carriles de entrada; las demás entradas (un carril) no tienen filtro.
+- **Puente Ruta 90 (nivel 2):** red aparte con su propio generador aleatorio. Pasa por encima de la glorieta sin interactuar con ella (los vehículos solo ven a los de su mismo nivel) y no cuenta en las métricas.
 
 ### Métricas
 
@@ -98,10 +97,10 @@ Estados de un vehículo: `pendiente → aproximando → en_cola → cruzando →
 
 ## Cómo cambiar los datos
 
-1. Editar `geometria.json`, `conteos.json` o `parametros.json`. En `conteos.json` cada intervalo de 5 min trae el conteo de motos, carros y busetas por entrada (`NO` = Carrera 15, `SE` = Troncal inferior, `NE` = Calle 40; `S` = Carrera 15 Sur y `E` = Troncal del Caribe solo reciben salidas), y `destinos` dice qué fracción de cada entrada sale por cada acceso. Los verdes del semáforo están en `parametros.json → control.semaforo.verde<ID>` y el orden de los agentes en `control.alternativa.orden`.
+1. Editar `geometria.json`, `conteos.json` o `parametros.json`. En `conteos.json` cada intervalo de 5 min trae el conteo de motos, carros y busetas por entrada (`NO` = Carrera 15, `SE` = Corredor inferior, `E` = Corredor Este, `NE` = Calle 40; `S` = Carrera 15 Sur y `SI` = Ramal inferior solo reciben salidas), y `destinos` dice qué fracción de cada entrada sale por cada acceso. Los verdes del semáforo están en `parametros.json → control.semaforo.verde<ID>` y el orden de los agentes en `control.alternativa.orden`.
 2. Copiar el mismo contenido en `datos_respaldo.js` (si no, el modo offline usará los valores viejos).
 
-> Los conteos incluidos son **datos calibrados base** en 3 bloques de 5 min por perfil (pico 150–160 vehículos por bloque: Carrera 15 ≈ 75, Calle 40 ≈ 45, Troncal inferior ≈ 40; ≈ 55 % motos, 35 % carros, 10 % busetas; valle ≈ 45 % del pico). Reemplácenlos con el aforo real del equipo.
+> Los conteos incluidos son **datos calibrados base** en 3 bloques de 5 min por perfil (pico 150–160 vehículos por bloque: Carrera 15 ≈ 75, Calle 40 ≈ 40, Corredor inferior ≈ 40, Corredor Este ≈ 23; ≈ 55 % motos, 35 % carros, 10 % busetas; valle ≈ 45 % del pico). Reemplácenlos con el aforo real del equipo.
 
 ## Próximos pasos sugeridos
 

@@ -9,14 +9,15 @@
  *
  * Orden estricto de capas (Z-order):
  *   1) Fondo verde + todas las calzadas del nivel inferior (anillo, Carrera 15,
- *      Carrera 15 Sur, Calle 40, corredor inferior–este, ramales e isletas),
- *      marcas viales y señales.
- *   2) Vehículos del nivel inferior (nivel 1) y agentes de tránsito.
+ *      Carrera 15 Sur, Calle 40, corredor inferior–este, ramales e isletas)
+ *      y marcas viales.
+ *   2) Vehículos del nivel inferior (nivel 1).
  *   3) Sombra proyectada y tableros OPACOS de las dos calzadas del Puente
  *      Ruta 90 (tapan a los vehículos de abajo en los cruces de 7:30, 6:30,
  *      2:30 y 3:00).
  *   4) Vehículos del puente (nivel 2).
- *   Después, en píxeles: rótulos y reloj.
+ *   Después: indicadores de control (ceda, semáforos, agentes) y, en
+ *   píxeles, rótulos y reloj.
  * ========================================================================= */
 'use strict';
 
@@ -80,14 +81,16 @@ const Dibujo = {
     ctx.setTransform(k, 0, 0, k, 0, 0);
     // Capa 1: suelo.
     this._suelo(ctx, geo);
-    this._senales(ctx, estado);
     // Capa 2: vehículos del nivel inferior.
     for (const veh of estado.vehiculos) if ((veh.nivel || 1) === 1 && !veh.puente) this._vehiculo(ctx, geo, veh);
-    this._agentes(ctx, estado);
     // Capa 3: puente opaco (con sombra) por encima de todo lo del suelo.
     this._puente(ctx, geo);
     // Capa 4: vehículos del puente.
     for (const veh of estado.vehiculos) if (veh.puente || veh.nivel === 2) this._vehiculo(ctx, geo, veh);
+    // Indicadores de control (señal de ceda, semáforos, agentes): encima de todo, porque las entradas
+    // Este y Corredor inferior quedan justo debajo del puente y si no, no se verían.
+    this._senales(ctx, estado);
+    this._agentes(ctx, estado);
 
     // Textos en píxeles.
     ctx.setTransform(r.dpr, 0, 0, r.dpr, 0, 0);
